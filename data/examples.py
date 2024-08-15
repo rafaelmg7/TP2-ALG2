@@ -6,7 +6,7 @@ datasets_info = {
     "raisin": 850,
     "wine_quality": 186,
     "spambase": 94,
-    "estimation_of_obesity_levels_based_on_eating_habits_and_physical_condition": 544,
+    # "estimation_of_obesity_levels_based_on_eating_habits_and_physical_condition": 544,
     "energy_efficiency": 242,
     "concrete_compressive_strength": 165,
     "statlog_vehicle_silhouettes": 149,
@@ -15,7 +15,9 @@ datasets_info = {
     "pen_based_recognition_of_handwritten_digits ": 81,
     "optical_recognition_of_handwritten_digits ": 80,
     "magic_gamma_telescope ": 159,
-    "isolet ": 54,
+    # "isolet ": 54,
+    'waveform_database_generator_version_1': 107,
+    "statlog_image_segmentation": 147,
     # "statlog_shuttle ": 148,
     "cardiotocography ": 193
 }

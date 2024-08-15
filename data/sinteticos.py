@@ -114,7 +114,7 @@ for i, (X, y) in enumerate(datasets):
         n = 3
         
     print(X.shape)
-    my_kmeans = MyKMeans(n_clusters=n, tol=1e-4, p=1)
+    my_kmeans = MyKMeans(n_clusters=n, tol=1e-4, p=2)
     # Normalize the dataset
     X = StandardScaler().fit_transform(X)
 

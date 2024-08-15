@@ -12,9 +12,13 @@ class MyKMeans:
     def get_minkowski_distance(self, X, Y):
         return np.power(np.sum(np.abs(X - Y) ** self.p), 1 / self.p)
 
-    # def precompute_dist_matrix(self, X):
-    #     dist_matrix = np.linalg.norm(X[:, np.newaxis] - X, ord=self.p, axis=2)
-    #     return dist_matrix
+    def precompute_dist_matrix(self, X):
+        m1 = np.abs(X[:, np.newaxis] - X).sum(axis=2)
+        m2 = np.power(np.sum((X[:, np.newaxis] - X) ** self.p, axis=2), 1 / self.p)
+        
+        # dist_matrix = np.zeros((X.shape[0], X.shape[0]))
+        
+        return m2
     
     def precompute_dist_matrix(self, X):
         n = X.shape[0]
