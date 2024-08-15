@@ -13,21 +13,21 @@ class MyKMeans:
         return np.power(np.sum(np.abs(X - Y) ** self.p), 1 / self.p)
 
     def precompute_dist_matrix(self, X):
-        m1 = np.abs(X[:, np.newaxis] - X).sum(axis=2)
-        m2 = np.power(np.sum((X[:, np.newaxis] - X) ** self.p, axis=2), 1 / self.p)
+        # m1 = np.abs(X[:, np.newaxis] - X).sum(axis=2)
+        dist_matrix = np.power(np.sum((X[:, np.newaxis] - X) ** self.p, axis=2), 1 / self.p)
         
         # dist_matrix = np.zeros((X.shape[0], X.shape[0]))
         
-        return m2
-    
-    def precompute_dist_matrix(self, X):
-        n = X.shape[0]
-        dist_matrix = np.zeros((n, n))
-        for i in range(n):
-            for j in range(i + 1, n):  # Optimize: Calculate only upper triangular part
-                dist_matrix[i, j] = self.get_minkowski_distance(X[i], X[j])
-                dist_matrix[j, i] = dist_matrix[i, j]  # Symmetry for lower triangular part
         return dist_matrix
+    
+    # def precompute_dist_matrix(self, X):
+    #     n = X.shape[0]
+    #     dist_matrix = np.zeros((n, n))
+    #     for i in range(n):
+    #         for j in range(i + 1, n):  # Optimize: Calculate only upper triangular part
+    #             dist_matrix[i, j] = self.get_minkowski_distance(X[i], X[j])
+    #             dist_matrix[j, i] = dist_matrix[i, j]  # Symmetry for lower triangular part
+    #     return dist_matrix
 
     def get_max_radius(self, X, dist_matrix):
         return np.max(dist_matrix)
