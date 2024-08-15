@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
+from scipy.spatial.distance import cdist
 
 class MyKMeans:
     def __init__(self, n_clusters=8, tol=1e-4, p=1):
@@ -11,6 +12,10 @@ class MyKMeans:
     def get_minkowski_distance(self, X, Y):
         return np.power(np.sum(np.abs(X - Y) ** self.p), 1 / self.p)
 
+    # def precompute_dist_matrix(self, X):
+    #     dist_matrix = np.linalg.norm(X[:, np.newaxis] - X, ord=self.p, axis=2)
+    #     return dist_matrix
+    
     def precompute_dist_matrix(self, X):
         n = X.shape[0]
         dist_matrix = np.zeros((n, n))

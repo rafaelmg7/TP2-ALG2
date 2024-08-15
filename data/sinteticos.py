@@ -1,6 +1,7 @@
 import time
 import warnings
 from itertools import cycle, islice
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -25,7 +26,7 @@ noisy_moons_2 = datasets.make_moons(n_samples=n_samples, noise=0.1, random_state
 blobs_1 = datasets.make_blobs(n_samples=n_samples, random_state=seed)
 blobs_2 = datasets.make_blobs(n_samples=n_samples, centers=4, random_state=seed+1)
 rng = np.random.RandomState(seed)
-no_structure_1 = rng.rand(n_samples, 2), None
+no_structure_1 = rng.rand(n_samples, 2), rng.randint(0, 2, n_samples)
 # no_structure_2 = rng.rand(n_samples, 2), None
 
 # Dados anisotrópicos
@@ -85,23 +86,48 @@ for i, (X, y) in enumerate(datasets):
     df["label"] = y
     df.to_csv(f"/home/rafaelmg/Documents/ALG2/TP2/data/synth_datasets/synthetic_dataset_{i+1}.csv", index=False)
 
+# Now, let's add the real datasets. They are .csvs in data/real_datasets. Their first row has the name of the columns; the second row contains the number of unique labels; the third row is the first row of the dataset. The last column is the label column.
+# Iterate over the real datasets and load them
+real_datasets = []
+nums_clusters = []
+for file in os.listdir("/home/rafaelmg/Documents/ALG2/TP2/data/real_datasets"):
+    if file.endswith(".csv"):
+        print(f"Loading {file}...")
+        df = pd.read_csv(f"/home/rafaelmg/Documents/ALG2/TP2/data/real_datasets/{file}")
+        # print(df.iloc[0, 0])
+        real_datasets.append((df.iloc[1:, :-1].values, df.iloc[1:, -1].values))
+        nums_clusters.append(df.iloc[0, 0])
+        
+# Add the real datasets to the list of datasets
+print(real_datasets[0])
+# print(real_datasets[0].shape)
+datasets.extend(real_datasets)
 
 # Instantiate MyKMeans
-my_kmeans = MyKMeans(n_clusters=3, tol=1e-4, p=1)
+results = []
 # Process each dataset
 for i, (X, y) in enumerate(datasets):
+    if i >= 20:
+        n = nums_clusters[i-20]
+        print(X)
+    else:
+        n = 3
+        
+    print(X.shape)
+    my_kmeans = MyKMeans(n_clusters=n, tol=1e-4, p=1)
     # Normalize the dataset
     X = StandardScaler().fit_transform(X)
 
     # Precompute the distance matrix
     dist_matrix = my_kmeans.precompute_dist_matrix(X)
+    print(dist_matrix.shape)
 
     # Initialize lists to store results
     radii = []
     silhouettes = []
     adjusted_rands = []
     execution_times = []
-    results = []
+    results_temp = []
     
     for run in range(30):
         result = {
@@ -159,7 +185,7 @@ for i, (X, y) in enumerate(datasets):
         result["silhouette_sklearn"] = silhouette_score(X, labels_sklearn)
         result["adjusted_rand_sklearn"] = adjusted_rand_score(y, labels_sklearn)
 
-        results.append(result)
+        results_temp.append(result)
 
         print(f"Dataset {i+1} Run {run+1} completed")
         print(f"approx_k_centers1 centers: {centers1}, radius: {radius1}")
@@ -177,29 +203,29 @@ for i, (X, y) in enumerate(datasets):
         print()
     
     # Print average results
-    avg_radius1 = np.mean([result["radius1"] for result in results])
-    avg_radius2 = np.mean([result["radius2"] for result in results])
-    avg_silhouette1 = np.mean([result["silhouette1"] for result in results])
-    avg_silhouette2 = np.mean([result["silhouette2"] for result in results])
-    avg_silhouette_sklearn = np.mean([result["silhouette_sklearn"] for result in results])
-    avg_adjusted_rand1 = np.mean([result["adjusted_rand1"] for result in results])
-    avg_adjusted_rand2 = np.mean([result["adjusted_rand2"] for result in results])
-    avg_adjusted_rand_sklearn = np.mean([result["adjusted_rand_sklearn"] for result in results])
-    avg_time1 = np.mean([result["time1"] for result in results])
-    avg_time2 = np.mean([result["time2"] for result in results])
-    avg_time_sklearn = np.mean([result["time_sklearn"] for result in results])
+    avg_radius1 = np.mean([result["radius1"] for result in results_temp])
+    avg_radius2 = np.mean([result["radius2"] for result in results_temp])
+    avg_silhouette1 = np.mean([result["silhouette1"] for result in results_temp])
+    avg_silhouette2 = np.mean([result["silhouette2"] for result in results_temp])
+    avg_silhouette_sklearn = np.mean([result["silhouette_sklearn"] for result in results_temp])
+    avg_adjusted_rand1 = np.mean([result["adjusted_rand1"] for result in results_temp])
+    avg_adjusted_rand2 = np.mean([result["adjusted_rand2"] for result in results_temp])
+    avg_adjusted_rand_sklearn = np.mean([result["adjusted_rand_sklearn"] for result in results_temp])
+    avg_time1 = np.mean([result["time1"] for result in results_temp])
+    avg_time2 = np.mean([result["time2"] for result in results_temp])
+    avg_time_sklearn = np.mean([result["time_sklearn"] for result in results_temp])
     
-    std_radius1 = np.std([result["radius1"] for result in results])
-    std_radius2 = np.std([result["radius2"] for result in results])
-    std_silhouette1 = np.std([result["silhouette1"] for result in results])
-    std_silhouette2 = np.std([result["silhouette2"] for result in results])
-    std_silhouette_sklearn = np.std([result["silhouette_sklearn"] for result in results])
-    std_adjusted_rand1 = np.std([result["adjusted_rand1"] for result in results])
-    std_adjusted_rand2 = np.std([result["adjusted_rand2"] for result in results])
-    std_adjusted_rand_sklearn = np.std([result["adjusted_rand_sklearn"] for result in results])
-    std_time1 = np.std([result["time1"] for result in results])
-    std_time2 = np.std([result["time2"] for result in results])
-    std_time_sklearn = np.std([result["time_sklearn"] for result in results])
+    std_radius1 = np.std([result["radius1"] for result in results_temp])
+    std_radius2 = np.std([result["radius2"] for result in results_temp])
+    std_silhouette1 = np.std([result["silhouette1"] for result in results_temp])
+    std_silhouette2 = np.std([result["silhouette2"] for result in results_temp])
+    std_silhouette_sklearn = np.std([result["silhouette_sklearn"] for result in results_temp])
+    std_adjusted_rand1 = np.std([result["adjusted_rand1"] for result in results_temp])
+    std_adjusted_rand2 = np.std([result["adjusted_rand2"] for result in results_temp])
+    std_adjusted_rand_sklearn = np.std([result["adjusted_rand_sklearn"] for result in results_temp])
+    std_time1 = np.std([result["time1"] for result in results_temp])
+    std_time2 = np.std([result["time2"] for result in results_temp])
+    std_time_sklearn = np.std([result["time_sklearn"] for result in results_temp])
     
     print(f"Average results for Dataset {i+1}:")
     print(f"approx_k_centers1 average radius: {avg_radius1} (std: {std_radius1})")
@@ -215,7 +241,37 @@ for i, (X, y) in enumerate(datasets):
     print(f"sklearn KMeans average execution time: {avg_time_sklearn} seconds (std: {std_time_sklearn})")
     print()
     
+    # Now, let's aggregate the results and store the average and standard deviation on the results list
+    results.append({
+        "dataset": i + 1,
+        "n_clusters": my_kmeans.n_clusters,
+        "avg_radius1": avg_radius1,
+        "std_radius1": std_radius1,
+        "avg_radius2": avg_radius2,
+        "std_radius2": std_radius2,
+        "avg_silhouette1": avg_silhouette1,
+        "std_silhouette1": std_silhouette1,
+        "avg_silhouette2": avg_silhouette2,
+        "std_silhouette2": std_silhouette2,
+        "avg_silhouette_sklearn": avg_silhouette_sklearn,
+        "std_silhouette_sklearn": std_silhouette_sklearn,
+        "avg_adjusted_rand1": avg_adjusted_rand1,
+        "std_adjusted_rand1": std_adjusted_rand1,
+        "avg_adjusted_rand2": avg_adjusted_rand2,
+        "std_adjusted_rand2": std_adjusted_rand2,
+        "avg_adjusted_rand_sklearn": avg_adjusted_rand_sklearn,
+        "std_adjusted_rand_sklearn": std_adjusted_rand_sklearn,
+        "avg_time1": avg_time1,
+        "std_time1": std_time1,
+        "avg_time2": avg_time2,
+        "std_time2": std_time2,
+        "avg_time_sklearn": avg_time_sklearn,
+        "std_time_sklearn": std_time_sklearn
+    })
+    
     # Optionally, visualize the results
+    if i >= 20:
+        continue
     plt.figure(figsize=(8, 4))
     plt.scatter(X[:, 0], X[:, 1], s=10, label='Data points')
     plt.scatter([c[0] for c in centers1], [c[1] for c in centers1], s=100, c='red', label='Centers1')
@@ -223,22 +279,24 @@ for i, (X, y) in enumerate(datasets):
     plt.scatter([c[0] for c in centers_sklearn], [c[1] for c in centers_sklearn], s=100, c='green', label='Sklearn Centers')
     plt.title(f"Dataset {i+1}")
     plt.legend()
-    plt.show()
+    plt.show(block=False)
+    plt.pause(0.5)
+    plt.close("all")
     
 # Create a DataFrame to store the results
 results_df = pd.DataFrame(results)
 
-# Group the results by dataset and algorithm
-grouped_df = results_df.groupby(["dataset", "algorithm"])
+# # Group the results by dataset and algorithm
+# grouped_df = results_df.groupby(["dataset", "algorithm"])
 
-# Calculate the mean and standard deviation for each metric
-mean_df = grouped_df.mean()
-std_df = grouped_df.std()
+# # Calculate the mean and standard deviation for each metric
+# mean_df = grouped_df.mean()
+# std_df = grouped_df.std()
 
-# Print the aggregated results
-print("Aggregated Results:")
-print(mean_df)
-print(std_df)
+# # Print the aggregated results
+# print("Aggregated Results:")
+# print(mean_df)
+# print(std_df)
 
 # Export the results to a CSV file
 results_df.to_csv("results.csv", index=False)
