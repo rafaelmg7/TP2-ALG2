@@ -83,7 +83,7 @@ for i in range(10):
 for i, (X, y) in enumerate(datasets):
     df = pd.DataFrame(X, columns=["x", "y"])
     df["label"] = y
-    df.to_csv(f"/home/rafaelmg/Documents/ALG2/TP2/data/datasets/synthetic_dataset_{i+1}.csv", index=False)
+    df.to_csv(f"/home/rafaelmg/Documents/ALG2/TP2/data/synth_datasets/synthetic_dataset_{i+1}.csv", index=False)
 
 
 # Instantiate MyKMeans

@@ -18,13 +18,17 @@ datasets_info = {
     "magic_gamma_telescope ": 159,
     "isolet ": 54,
     "statlog_vehicle_silhouettes ": 149,
-    "statlog_shuttle ": 148,
+    # "statlog_shuttle ": 148,
     "cardiotocography ": 193
 }
 
 print("Fetching datasets...")
 # Load datasets
-datasets = {name: fetch_ucirepo(id=dataset_id) for name, dataset_id in datasets_info.items()}
+# datasets = {name: fetch_ucirepo(id=dataset_id) for name, dataset_id in datasets_info.items()}
+datasets = {}
+for name, dataset_id in datasets_info.items():
+    datasets[name] = fetch_ucirepo(id=dataset_id)
+    print(f"Loaded dataset: {name}")
 print("Datasets loaded.")
 # Iterate over each dataset and export if 'class' or 'label' column is present
 for name, dataset in datasets.items():
