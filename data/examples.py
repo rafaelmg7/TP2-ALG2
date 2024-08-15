@@ -7,11 +7,11 @@ datasets_info = {
     "wine_quality": 186,
     "spambase": 94,
     # "estimation_of_obesity_levels_based_on_eating_habits_and_physical_condition": 544,
-    "energy_efficiency": 242,
-    "concrete_compressive_strength": 165,
+    # "energy_efficiency": 242,
+    # "concrete_compressive_strength": 165,
     "statlog_vehicle_silhouettes": 149,
     "banknote_authentication": 267,
-    "absenteeism_at_work": 445,
+    # "absenteeism_at_work": 445,
     "pen_based_recognition_of_handwritten_digits ": 81,
     "optical_recognition_of_handwritten_digits ": 80,
     "magic_gamma_telescope ": 159,
@@ -19,7 +19,8 @@ datasets_info = {
     'waveform_database_generator_version_1': 107,
     "statlog_image_segmentation": 147,
     # "statlog_shuttle ": 148,
-    "cardiotocography ": 193
+    "cardiotocography ": 193,
+    # "website_phishing": 379
 }
 
 print("Fetching datasets...")
@@ -40,15 +41,18 @@ for name, dataset in datasets.items():
     # Check if 'class' or 'label' columns exist (case insensitive)
     class_column = next((col for col in columns if col.lower() == 'class'), None)
     label_column = next((col for col in columns if col.lower() == 'label'), None)
+    moreThanOneTarget = len(columns) > 1
 
-    if class_column or label_column:
+    if (class_column or label_column) or not moreThanOneTarget:
+        unique_count = dataset.data.targets[columns[0]].nunique()
+        df['label'] = dataset.data.targets[columns[0]]
         # Determine the unique count
-        if class_column:
-            unique_count = dataset.data.targets[class_column].nunique()
-            df['label'] = dataset.data.targets[class_column]
-        else:
-            unique_count = dataset.data.targets[label_column].nunique()
-            df['label'] = dataset.data.targets[label_column]
+        # if class_column:
+        #     unique_count = dataset.data.targets[class_column].nunique()
+        #     df['label'] = dataset.data.targets[class_column]
+        # else:
+        #     unique_count = dataset.data.targets[label_column].nunique()
+        #     df['label'] = dataset.data.targets[label_column]
 
         print(df['label'])
         df['label'], _ = pd.factorize(df['label'])

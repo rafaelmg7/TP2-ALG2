@@ -14,15 +14,6 @@ class MyKMeans:
 
     def precompute_dist_matrix(self, X):
         return cdist(X, X, 'minkowski', p=self.p)
-    
-    # def precompute_dist_matrix(self, X):
-    #     n = X.shape[0]
-    #     dist_matrix = np.zeros((n, n))
-    #     for i in range(n):
-    #         for j in range(i + 1, n):  # Optimize: Calculate only upper triangular part
-    #             dist_matrix[i, j] = self.get_minkowski_distance(X[i], X[j])
-    #             dist_matrix[j, i] = dist_matrix[i, j]  # Symmetry for lower triangular part
-    #     return dist_matrix
 
     def get_max_radius(self, X, dist_matrix):
         return np.max(dist_matrix)
