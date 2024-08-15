@@ -108,7 +108,7 @@ results = []
 # Process each dataset
 for i, (X, y) in enumerate(datasets):
     if i >= 20:
-        n = nums_clusters[i-20]
+        n = int(nums_clusters[i-20])
         print(X)
     else:
         n = 3
@@ -147,29 +147,33 @@ for i, (X, y) in enumerate(datasets):
 
         # Run approx_k_centers1
         start_time = time.time()
-        centers1, radius1 = my_kmeans.approx_k_centers1(X, my_kmeans.n_clusters, dist_matrix, interval_width=0.15)
+        centers1, radius1 = my_kmeans.approx_k_centers1(X, dist_matrix, interval_width=0.15)
         end_time = time.time()
         
         result["centers1"] = centers1
         result["radius1"] = radius1
         result["time1"] = end_time - start_time
         
-        labels1 = np.argmin(dist_matrix[:, [np.where((X == c).all(axis=1))[0][0] for c in centers1]], axis=1)
-        result["silhouette1"] = silhouette_score(X, labels1)
-        result["adjusted_rand1"] = adjusted_rand_score(y, labels1)
-
         # Run approx_k_centers2
         start_time = time.time()
-        centers2, radius2 = my_kmeans.approx_k_centers2(X, my_kmeans.n_clusters, dist_matrix)
+        centers2, radius2 = my_kmeans.approx_k_centers2(X, dist_matrix)
         end_time = time.time()
         result["centers2"] = centers2
         result["radius2"] = radius2
         result["time2"] = end_time - start_time
+        
+        try:
+            labels1 = np.argmin(dist_matrix[:, [np.where((X == c).all(axis=1))[0][0] for c in centers1]], axis=1)
+            result["silhouette1"] = silhouette_score(X, labels1)
+            result["adjusted_rand1"] = adjusted_rand_score(y, labels1)
 
-        # Assign labels based on the nearest center
-        labels2 = np.argmin(dist_matrix[:, [np.where((X == c).all(axis=1))[0][0] for c in centers2]], axis=1)
-        result["silhouette2"] = silhouette_score(X, labels2)
-        result["adjusted_rand2"] = adjusted_rand_score(y, labels2)
+            # Assign labels based on the nearest center
+            labels2 = np.argmin(dist_matrix[:, [np.where((X == c).all(axis=1))[0][0] for c in centers2]], axis=1)
+            result["silhouette2"] = silhouette_score(X, labels2)
+            result["adjusted_rand2"] = adjusted_rand_score(y, labels2)
+        except ValueError as e:
+            print(f"Error on dataset {i+1} run {run+1}: {e}")
+            continue
         
         # Run KMeans from sklearn
         start_time = time.time()

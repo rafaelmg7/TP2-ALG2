@@ -13,12 +13,7 @@ class MyKMeans:
         return np.power(np.sum(np.abs(X - Y) ** self.p), 1 / self.p)
 
     def precompute_dist_matrix(self, X):
-        # m1 = np.abs(X[:, np.newaxis] - X).sum(axis=2)
-        dist_matrix = np.power(np.sum((X[:, np.newaxis] - X) ** self.p, axis=2), 1 / self.p)
-        
-        # dist_matrix = np.zeros((X.shape[0], X.shape[0]))
-        
-        return dist_matrix
+        return cdist(X, X, 'minkowski', p=self.p)
     
     # def precompute_dist_matrix(self, X):
     #     n = X.shape[0]
@@ -48,7 +43,7 @@ class MyKMeans:
     
         return len(centers) <= k, [X[i] for i in centers]
 
-    def approx_k_centers1(self, X, k, dist_matrix, interval_width=0.1):
+    def approx_k_centers1(self, X, dist_matrix, interval_width=0.1):
         r_max = self.get_max_radius(X, dist_matrix)
         left, right = 0, r_max
 
@@ -57,9 +52,9 @@ class MyKMeans:
 
         while right - left > interval_width:
             mid = (left + right) / 2
-            can_cluster, centers = self.can_cluster(X, k, mid, dist_matrix)
+            can_cluster, centers = self.can_cluster(X, self.n_clusters, mid, dist_matrix)
             
-            if len(centers) == k:
+            if len(centers) == self.n_clusters:
                 return centers, mid  # Se encontrar exatamente k centros, retornar imediatamente
             
             if can_cluster:
@@ -73,13 +68,13 @@ class MyKMeans:
         return np.array(best_centers), best_radius
 
 
-    def approx_k_centers2(self, X, k, dist_matrix):
-        if k >= len(X):
+    def approx_k_centers2(self, X, dist_matrix):
+        if self.n_clusters >= len(X):
             return X
         centers = [X[np.random.randint(0, len(X))]]
         center_indices = [np.random.randint(0, len(X))]
 
-        while len(centers) < k:
+        while len(centers) < self.n_clusters:
             # Recalcular distâncias mínimas de todos os pontos aos centros já selecionados
             distances = np.min([dist_matrix[i] for i in center_indices], axis=0)
             i = np.argmax(distances)

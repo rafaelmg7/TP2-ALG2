@@ -56,13 +56,8 @@ for name, dataset in datasets.items():
         df.loc[-1] = [unique_count] * len(df.columns)  # Add a new row with unique_count
         df.index = df.index + 1  # Shift the index
         df = df.sort_index()  # Sort by index to place the new row at the top
-
-        # Add a new column representing the label of each row
-        # if class_column:
-        #     df['label'] = dataset.data.targets[class_column]
-        # else:
-        #     df['label'] = dataset.data.targets[label_column]
         
+        df = df.head(2500)
             
         # Export the DataFrame to a CSV file named after the dataset
         df.to_csv(f'/home/rafaelmg/Documents/ALG2/TP2/data/real_datasets/{name}_data.csv', index=False)
