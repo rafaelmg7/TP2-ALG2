@@ -12,16 +12,25 @@ datasets_info = {
     "image_segmentation": 50,
     "statlog_vehicle_silhouettes": 149,
     "banknote_authentication": 267,
-    "absenteeism_at_work": 445
+    "absenteeism_at_work": 445,
+    "pen_based_recognition_of_handwritten_digits ": 81,
+    "optical_recognition_of_handwritten_digits ": 80,
+    "magic_gamma_telescope ": 159,
+    "isolet ": 54,
+    "statlog_vehicle_silhouettes ": 149,
+    "statlog_shuttle ": 148,
+    "cardiotocography ": 193
 }
 
+print("Fetching datasets...")
 # Load datasets
 datasets = {name: fetch_ucirepo(id=dataset_id) for name, dataset_id in datasets_info.items()}
-
+print("Datasets loaded.")
 # Iterate over each dataset and export if 'class' or 'label' column is present
 for name, dataset in datasets.items():
     df = dataset.data.features
     columns = dataset.data.targets.columns
+    print(f"Exporting {name} dataset...")
 
     # Check if 'class' or 'label' columns exist (case insensitive)
     class_column = next((col for col in columns if col.lower() == 'class'), None)
