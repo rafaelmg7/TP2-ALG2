@@ -8,8 +8,8 @@ Este repositório contém a implementação de algoritmos de clustering utilizan
   - `reais.py`: Script contendo a manipulação de datasets reais para aplicação dos algoritmos.
   - `plots/`: Diretório que armazena os gráficos gerados durante a execução dos algoritmos.
 - `main.py`: Script principal que executa os algoritmos de clustering nos datasets definidos e salva os resultados das métricas e gráficos.
-  - `results_p1.csv`: Arquivo CSV contendo as métricas de avaliação de todos os datasets usando `p1`.
-  - `results_p2.csv`: Arquivo CSV contendo as métricas de avaliação de todos os datasets usando `p2`.
+- `results_p1.csv`: Arquivo CSV contendo as métricas de avaliação de todos os datasets usando `p1`.
+- `results_p2.csv`: Arquivo CSV contendo as métricas de avaliação de todos os datasets usando `p2`.
 
 ## Requisitos
 
